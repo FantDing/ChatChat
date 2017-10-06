@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>login.qml</file>
+        <file>home.qml</file>
+        <file>chat.qml</file>
+    </qresource>
+</RCC>
