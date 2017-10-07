@@ -11,8 +11,8 @@ class ChatRecordsModel : public QAbstractListModel
     Q_OBJECT
 public:
     ChatRecordsModel(QObject *parent = nullptr);
-    Q_INVOKABLE void pushBack(QString content);
-    
+    Q_INVOKABLE void pushBack(QString content,bool direction);
+    Q_INVOKABLE void clear();
     // QAbstractItemModel interface
     virtual int rowCount(const QModelIndex &parent=QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
@@ -20,7 +20,8 @@ public:
     
     
     enum Role{
-        role1=1
+        role1=1,
+        role2
     };
 
 private:
@@ -29,11 +30,13 @@ private:
 
 class ChatRecordItem{
 public:
-    ChatRecordItem(QString content="");
+    ChatRecordItem(QString content="",bool direction=false);
     QString getContent() const;
+    bool getDirection() const;
+    
 private:
     QString content;
-    QString direction;//1:send by myself
+    bool direction;//true:send; false:recived
 };
 
 

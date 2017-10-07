@@ -10,6 +10,7 @@ Item {
     Column{
         Rectangle{
             //header
+            id:header
             width: homeCom.width
             height: 100
             color: Material.color(Material.Cyan)
@@ -24,7 +25,7 @@ Item {
         ScrollView{
             // friends list
             width: homeCom.width
-            height: 200
+            height: homeCom.height-header.height
             ListView{
                 id:friendsView
                 anchors.fill: parent

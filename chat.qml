@@ -29,16 +29,17 @@ Item {
                 text: "back"
                 onClicked: {
                     chatCom.visible=false;
+                    chatCom.destroy();
                 }
             }
             Button{
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 10
-                text:"close"
+                text:"clear"
                 onClicked: {
-                    chatCom.visible=false;
-                    chatCom.destroy();
+//                    chatCom.visible=false;
+                    chatModel.clear();
                 }
             }
         }//head-end
@@ -50,26 +51,19 @@ Item {
             width: parent.width
             //        model: 
             delegate: chatDelegate
-            onCurrentIndexChanged: {
-                //1. is the zero index
-                //2. is clear
-                if(currentIndex==-1||currentIndex==0){
-                    return;
-                }
+            
+            Component.onCompleted: {
+                positionViewAtEnd();
             }
-            //life-cycle
-            Component.onCompleted:{
-                //@ show the last item in at the bottom
-                positionViewAtEnd()
-            }
+            
             
             Component{
                 id:chatDelegate
                 Rectangle{
                     height: 40
-                    width: parent.width
+                    width: parent.width-10
                     Text {
-                        anchors.right: parent.right
+                        anchors.right: direction?parent.right:undefined
                         text: content
                         font.pointSize: 16
                     }
@@ -78,7 +72,6 @@ Item {
         }//chatView-end
         Row{
             // input & send
-            width: parent.width-100;
             height: 50
             spacing: 20
             anchors.horizontalCenter: parent.horizontalCenter
@@ -87,22 +80,22 @@ Item {
                 focus: true
                 width: 200
             }
-            
             Button{
                 text:"send"
                 onClicked: {
-                    chatModel.pushBack(send_content.text)
+                    if(send_content.text.trim().length==0){
+                        send_content.focus=true;
+                        return;
+                    }
+
+                    chatModel.pushBack(send_content.text,true)
                     send_content.text=""
                     send_content.focus=true;
+                    
+                    charView.positionViewAtEnd();
                 }
             }
         }
     }
-    Component.onDestruction: {
-        console.log('destroyed')
-    }
     
-    Component.onCompleted: {
-        console.log("generate")
-    }
 }

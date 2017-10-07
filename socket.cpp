@@ -8,6 +8,10 @@ Socket::Socket()
     this->friendsModel->pushBack("192.168.5.2","zhangfei");
     this->friendsModel->pushBack("192.168.6.2","caocao");
     this->friendsModel->pushBack("192.168.7.2","sunquan");
+    this->friendsModel->pushBack("192.168.3.2","wefwef");
+    this->friendsModel->pushBack("192.168.2.2","sdfa");
+    this->friendsModel->pushBack("192.168.4.2","hshsy");
+    this->friendsModel->pushBack("192.168.5.2","safcv");
 }
 
 FriendsModel *Socket::getFriendsModel() const
