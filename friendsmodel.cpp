@@ -41,16 +41,7 @@ QVariant FriendsModel::data(const QModelIndex &index, int role) const
     else if(role==Role::role2){
         return item.getNickName();
     }
-//    else if(role==Role::role3){
-//        //when use "chatRecordsModel" in qml, it's neccessary to judge if the pointer has been initialized
-//        if(item.getChatRecordsModel()==NULL){
-//            item.setChatRecordsModel(new ChatRecordsModel);
-//            return item.getChatRecordsModel();
-//        }
-//        else{
-//            return item.getChatRecordsModel();
-//        }
-//    }
+
     return QVariant();
 }
 
@@ -59,7 +50,6 @@ QHash<int, QByteArray> FriendsModel::roleNames() const
     QHash<int,QByteArray> hash;
     hash[Role::role1]="ipv4";
     hash[Role::role2]="nickName";
-//    hash[Role::role3]="chatRecordsModel";
     return hash;
 }
 
@@ -72,13 +62,3 @@ QString FriendItem::getNickName() const
 {
     return nickName;
 }
-
-//ChatRecordsModel *FriendItem::getChatRecordsModel() const
-//{
-//    return chatRecordsModel;
-//}
-
-//void FriendItem::setChatRecordsModel(ChatRecordsModel *value)
-//{
-//    chatRecordsModel = value;
-//}

@@ -14,7 +14,6 @@ Item {
             width: homeCom.width
             height: 100
             color: Material.color(Material.Cyan)
-            
             Text{
                 anchors.centerIn: parent
                 id:username
@@ -26,6 +25,7 @@ Item {
             // friends list
             width: homeCom.width
             height: homeCom.height-header.height
+            contentWidth: homeCom.width
             ListView{
                 id:friendsView
                 anchors.fill: parent
@@ -75,7 +75,7 @@ Item {
                             onClicked: {
                                 //The index is exposed as an accessible index property
                                 friendsView.currentIndex=index
-                                setCurrentFriend(friendsView.currentItem.address+friendsView.currentItem.name);
+                                setCurrentFriend(friendsView.currentItem.name+friendsView.currentItem.address);
                                 var charCom=Qt.createComponent("chat.qml")
                                 var currentPage=charCom.createObject(homeCom
                                                                      ,{

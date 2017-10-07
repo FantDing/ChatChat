@@ -36,7 +36,13 @@ Item {
                     return
                 }
                 loginCom.visible=false;
-                //@ emit login signal
+                // when login success
+                setNickName(username.text);
+                initalizeNetwork();
+                sendMsg(0,"broadcast");
+                
+                
+                //@ emit login signal,to delete this Component
                 loginCom.login(username.text);
             }
             Material.background: Material.Teal
