@@ -89,6 +89,7 @@ void Socket::handleComingDatagrams()
                 //is myself
                 return;
             }
+            //must add this to avoid endless sendHello
             if(!friends.contains(friendName+friendIpv4)){
                 friendsModel->pushBack(friendIpv4,friendName);
                 sendMsg(HELLO,ipv4);

@@ -60,7 +60,7 @@ Item {
                         Column{
                             Text {
                                 id:txt_nickName
-                                text: index+":"+nickName
+                                text:nickName
                                 font.pointSize: 16
                             }
                             Text {
@@ -79,7 +79,8 @@ Item {
                                 var charCom=Qt.createComponent("chat.qml")
                                 var currentPage=charCom.createObject(homeCom
                                                                      ,{
-                                                                         "theModel":chatModel
+                                                                         "theModel":chatModel,
+                                                                         "friendName":friendsView.currentItem.name
                                                                      }
                                                                      );
                             }

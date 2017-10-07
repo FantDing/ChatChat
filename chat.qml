@@ -6,6 +6,7 @@ Item {
     id:chatCom
     anchors.fill: parent
     property alias theModel: charView.model
+    property alias friendName: friendName.text
     Rectangle{
         //@ because next Column'items has space,you will
         // see parent in the space. So, this Rectangle can
@@ -32,6 +33,12 @@ Item {
                     chatCom.destroy();
                 }
             }
+            Label{
+                id:friendName;
+                anchors.centerIn: parent
+                font.pointSize: 20
+            }
+
             Button{
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
@@ -41,6 +48,7 @@ Item {
 //                    chatCom.visible=false;
                     chatModel.clear();
                 }
+                Material.background: Material.Red
             }
         }//head-end
         ListView{
