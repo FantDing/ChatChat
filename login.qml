@@ -15,7 +15,7 @@ Item {
         Row{
             spacing: 8
             Label{
-                text: "username"
+                text: "USERNAME"
                 topPadding: 10
             }
 
@@ -39,7 +39,7 @@ Item {
                 // when login success
                 setNickName(username.text);
                 initalizeNetwork();
-                sendMsg(0,"broadcast");
+                sendMsg(0,"broadcast","all");
                 
                 
                 //@ emit login signal,to delete this Component

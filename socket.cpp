@@ -43,12 +43,13 @@ void Socket::initalizeNetwork()
     }
     udpPort=44332;
     udpSocket=new QUdpSocket(this);
-    bool success=udpSocket->bind(udpPort,QUdpSocket::ShareAddress);
-    qDebug()<<success;
+    qDebug()<<"bind on:"<<QHostAddress::AnyIPv4;
+    bool success=udpSocket->bind(QHostAddress::AnyIPv4, udpPort,QUdpSocket::ShareAddress|QUdpSocket::ReuseAddressHint);
+    qDebug()<<"BIND:"<<success;
     connect(udpSocket,SIGNAL(readyRead()),this,SLOT(handleComingDatagrams()));
 }
 
-void Socket::sendMsg(int type,QString address)
+void Socket::sendMsg(int type,QString address,QString friendName,QString content)
 {
     QHostAddress targetAddress; 
     if(address=="broadcast"){
@@ -59,10 +60,17 @@ void Socket::sendMsg(int type,QString address)
     }
     QByteArray data;//to send
     QDataStream out(&data,QIODevice::WriteOnly);
-    out<<type<<nickName;// HELLO FantDing
+    out<<type<<nickName;// Type MyName
     switch (type) {
     case HELLO:
-        out<<ipv4;//HELLO FantDing "172.20.52.53"
+        out<<ipv4;//HELLO MyName MyIp
+        qDebug()<<"HELLO "<<nickName<<" "<<ipv4;
+        udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
+        break;
+    case SAY:
+        // SAY MyName MyIp FriendName content
+        qDebug()<<"say:"<<nickName<<"+"<<targetAddress<<"+"<<content;
+        out<<ipv4<<friendName<<content;
         udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
         break;
     default:
@@ -73,6 +81,7 @@ void Socket::sendMsg(int type,QString address)
 
 void Socket::handleComingDatagrams()
 {
+    qDebug()<<"recive data";
     while(udpSocket->hasPendingDatagrams()){
         QByteArray comingData;//recived
         comingData.resize(udpSocket->pendingDatagramSize());
@@ -82,23 +91,46 @@ void Socket::handleComingDatagrams()
         in>>msgType;//read MsgType first
         QString friendName;
         QString friendIpv4;
+        QString chatContent="";
+        QString targetName="";
+        in>>friendName>>friendIpv4;
+        qDebug()<<"recived from friend:"<<friendName<<"+"<<friendIpv4;
+        if(friendName==nickName&&friendIpv4==ipv4){
+            qDebug()<<"ignore";
+            //is myself
+            return;
+        }
         switch (msgType) {
         case HELLO:// HELLO FantDing "172.20.52.53" ; HELLO has been read
-            in>>friendName>>friendIpv4;
-            if(friendName==nickName&&friendIpv4==ipv4){
-                //is myself
-                return;
-            }
             //must add this to avoid endless sendHello
             if(!friends.contains(friendName+friendIpv4)){
                 friendsModel->pushBack(friendIpv4,friendName);
-                sendMsg(HELLO,ipv4);
+                sendMsg(HELLO,friendIpv4,"all");
             }
+            break;
+        case SAY:
+            // SAY FantDing "172.20.52.53" "nice to meet U"
+            //            SAY MyName MyIp FriendName content
+            qDebug()<<"recive say";
+            in>>targetName;
+            if(targetName!=nickName){
+                qDebug()<<targetName<<":NOT ME";
+                return;
+            }
+            in>>chatContent;
+            if(map.contains(friendName+friendIpv4)){
+                map[friendName+friendIpv4]->pushBack(chatContent,false);
+            }
+            else{
+                map[friendName+friendIpv4]=new ChatRecordsModel();
+                map[friendName+friendIpv4]->pushBack(chatContent,false);
+            }
+            //            map.value(friendName+friendIpv4)->pushBack(chatContent,false);
             break;
         default:
             break;
         }
-    }
+    }//while-end
 }
 
 

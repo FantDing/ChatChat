@@ -76,11 +76,13 @@ Item {
                                 //The index is exposed as an accessible index property
                                 friendsView.currentIndex=index
                                 setCurrentFriend(friendsView.currentItem.name+friendsView.currentItem.address);
+                                console.log(friendsView.currentItem.name+":"+friendsView.currentItem.address);
                                 var charCom=Qt.createComponent("chat.qml")
                                 var currentPage=charCom.createObject(homeCom
                                                                      ,{
                                                                          "theModel":chatModel,
-                                                                         "friendName":friendsView.currentItem.name
+                                                                         "friendName":friendsView.currentItem.name,
+                                                                         "frindIpv4":friendsView.currentItem.address
                                                                      }
                                                                      );
                             }

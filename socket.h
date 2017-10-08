@@ -35,7 +35,14 @@ public:
     Q_ENUM(MsgType)
     
     Q_INVOKABLE void initalizeNetwork();//set port,udpSocket......
-    Q_INVOKABLE void sendMsg(int type,QString address);//address is target client's ipv4 address or broadcast address
+    /*
+     *
+     * @type MsgType,cause you cannot use Enums in qml,so it's a int type
+     * @address target client's ipv4,also you can use "boradcast"
+     * @content the msg you will send
+     * 
+    */
+    Q_INVOKABLE void sendMsg(int type,QString address,QString friendName,QString content="");
     
 private:
     // gui

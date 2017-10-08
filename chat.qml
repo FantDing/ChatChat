@@ -7,6 +7,7 @@ Item {
     anchors.fill: parent
     property alias theModel: charView.model
     property alias friendName: friendName.text
+    property string frindIpv4: ""
     Rectangle{
         //@ because next Column'items has space,you will
         // see parent in the space. So, this Rectangle can
@@ -91,19 +92,18 @@ Item {
             Button{
                 text:"send"
                 onClicked: {
+                    console.log("click")
                     if(send_content.text.trim().length==0){
                         send_content.focus=true;
                         return;
                     }
-
-                    chatModel.pushBack(send_content.text,true)
-                    send_content.text=""
+                    chatModel.pushBack(send_content.text,true);//add to model
+                    sendMsg(2,"broadcast",friendName.text,send_content.text);//send
+                    send_content.text="";
                     send_content.focus=true;
-                    
                     charView.positionViewAtEnd();
                 }
             }
         }
     }
-    
 }
