@@ -5,5 +5,7 @@
         <file>login.qml</file>
         <file>home.qml</file>
         <file>chat.qml</file>
+        <file>chooseFile.qml</file>
+        <file>receiveFile.qml</file>
     </qresource>
 </RCC>

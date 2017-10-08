@@ -8,6 +8,9 @@ Socket::Socket()
 {
     this->friendsModel=new FriendsModel();
     this->udpSocket=NULL;
+    //tcp
+    bytesWrriten=0;
+    payloadSize=0;
 }
 
 FriendsModel *Socket::getFriendsModel() const
@@ -60,17 +63,22 @@ void Socket::sendMsg(int type,QString address,QString friendName,QString content
     }
     QByteArray data;//to send
     QDataStream out(&data,QIODevice::WriteOnly);
-    out<<type<<nickName;// Type MyName
+    out<<type<<nickName<<ipv4;// Type MyName MyIP
     switch (type) {
-    case HELLO:
-        out<<ipv4;//HELLO MyName MyIp
-        qDebug()<<"HELLO "<<nickName<<" "<<ipv4;
+    case HELLO:// HELLO MyName MyIP
         udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
         break;
     case SAY:
         // SAY MyName MyIp FriendName content
-        qDebug()<<"say:"<<nickName<<"+"<<targetAddress<<"+"<<content;
-        out<<ipv4<<friendName<<content;
+        out<<friendName<<content;
+        udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
+        break;
+    case FILECOME:// FILECOME MyName MyIP FriendName FileName
+        out<<friendName<<content;
+        qDebug()<<"FILECOME "<<nickName<<" "<<ipv4<<" "<<friendName<<" "<<content;
+        udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
+        break;
+    case FILEREFUSE:
         udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
         break;
     default:
@@ -79,39 +87,56 @@ void Socket::sendMsg(int type,QString address,QString friendName,QString content
     }
 }
 
+void Socket::initalizeTcp()
+{
+    tcpPort=34234;
+    this->tcpServer=new QTcpServer(this);
+    connect(tcpServer,SIGNAL(newConnection()),this,SLOT(sendFile()));
+    if(!tcpServer->listen(QHostAddress::AnyIPv4,tcpPort)){
+        qDebug()<<"TCP LISTEN ERROR";
+        return;
+    }
+    else {
+        qDebug()<<"TCP listening...";
+    }
+    
+}
+
+void Socket::setFileName(const QString &value)
+{
+    fileName = value;
+    if(!fileName.isEmpty()){
+        theFileName=fileName.right(fileName.size()-fileName.lastIndexOf('/')-1);
+    }
+    qDebug()<<theFileName;
+}
+
 void Socket::handleComingDatagrams()
 {
-    qDebug()<<"recive data";
     while(udpSocket->hasPendingDatagrams()){
         QByteArray comingData;//recived
         comingData.resize(udpSocket->pendingDatagramSize());
         udpSocket->readDatagram(comingData.data(),comingData.size());
         QDataStream in(&comingData,QIODevice::ReadOnly);
         int msgType;
-        in>>msgType;//read MsgType first
         QString friendName;
         QString friendIpv4;
         QString chatContent="";
         QString targetName="";
-        in>>friendName>>friendIpv4;
-        qDebug()<<"recived from friend:"<<friendName<<"+"<<friendIpv4;
+        in>>msgType>>friendName>>friendIpv4;
         if(friendName==nickName&&friendIpv4==ipv4){
-            qDebug()<<"ignore";
-            //is myself
             return;
         }
         switch (msgType) {
-        case HELLO:// HELLO FantDing "172.20.52.53" ; HELLO has been read
-            //must add this to avoid endless sendHello
+        case HELLO:
+            //must add this condition to avoid endless sendHello
             if(!friends.contains(friendName+friendIpv4)){
                 friendsModel->pushBack(friendIpv4,friendName);
                 sendMsg(HELLO,friendIpv4,"all");
             }
             break;
         case SAY:
-            // SAY FantDing "172.20.52.53" "nice to meet U"
-            //            SAY MyName MyIp FriendName content
-            qDebug()<<"recive say";
+            // FriendName content
             in>>targetName;
             if(targetName!=nickName){
                 qDebug()<<targetName<<":NOT ME";
@@ -125,12 +150,65 @@ void Socket::handleComingDatagrams()
                 map[friendName+friendIpv4]=new ChatRecordsModel();
                 map[friendName+friendIpv4]->pushBack(chatContent,false);
             }
-            //            map.value(friendName+friendIpv4)->pushBack(chatContent,false);
             break;
+        case FILECOME:// FriendName FileName
+//            qDebug()<<"FILECOME";
+            in>>targetName;
+            if(targetName!=nickName){
+                qDebug()<<targetName<<":NOT ME";
+                return;
+            }
+            in>>chatContent;
+            qDebug()<<"fileCome in c++";
+            emit fileCome(friendName,friendIpv4,chatContent);
+            break;
+        case FILEREFUSE:
+            emit fileStatus("Refuse");
         default:
             break;
         }
     }//while-end
+}
+
+void Socket::sendFile()
+{
+    tcpSocketSend=tcpServer->nextPendingConnection();
+    connect(tcpSocketSend,SIGNAL(bytesWritten(qint64)),this,SLOT(SendContinueAndUpdateProgressBar(qint64)));
+    locFile=new QFile(fileName);
+    if(!locFile->open(QFile::ReadOnly)){
+        qDebug()<<"file open fail";
+        return ;
+    }
+    totalBytesToSend=locFile->size();
+    QDataStream sendOut(&outBlock,QIODevice::WriteOnly);
+    sendOut.setVersion(QDataStream::Qt_4_7);
+    sendOut<<qint64(0)<<qint64(0)<<theFileName;
+    
+    this->totalBytesToSend+=outBlock.size();
+    sendOut.device()->seek(0);
+    sendOut<<totalBytesToSend<<qint64(outBlock.size()-sizeof(qint64)*2);
+    bytesToWrite=totalBytesToSend-tcpSocketSend->write(outBlock);
+    outBlock.resize(0);
+}
+
+void Socket::SendContinueAndUpdateProgressBar(qint64 numBytes)
+{
+    bytesWrriten+=(int)numBytes;
+    if(bytesToWrite>0){
+        outBlock=locFile->read(qMin(bytesToWrite,payloadSize));
+        bytesToWrite-=(int)tcpSocketSend->write(outBlock);
+        outBlock.resize(0);
+    }
+    else{
+        locFile->close();
+    }
+    
+    if(bytesWrriten==totalBytesToSend){
+        locFile->close();
+        tcpServer->close();
+        qDebug()<<"send file end";
+        emit fileStatus("Success");
+    }
 }
 
 

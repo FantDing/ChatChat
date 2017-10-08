@@ -7,6 +7,22 @@ Item {
     anchors.fill: parent
     property alias username: username.text
     property bool isStartTime: true
+    
+    function onSignal(friendName,friendIpv4,fileName){
+        console.log(fileName+" "+friendName+" "+friendIpv4)
+        var com=Qt.createComponent("receiveFile.qml");
+        com.createObject(homeCom
+                         ,{
+                             "frindName":friendName,
+                             "frindIpv4":friendIpv4,
+                             "fileName":fileName
+                         }
+                         );
+    }
+    Component.onCompleted: {
+        onFileCome.connect(onSignal)
+    }
+    
     Column{
         Rectangle{
             //header

@@ -39,14 +39,13 @@ Item {
                 anchors.centerIn: parent
                 font.pointSize: 20
             }
-
             Button{
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 text:"clear"
                 onClicked: {
-//                    chatCom.visible=false;
+                    //                    chatCom.visible=false;
                     chatModel.clear();
                 }
                 Material.background: Material.Red
@@ -105,5 +104,24 @@ Item {
                 }
             }
         }
+        
+        Row{
+            //function area
+            Button{
+                id:sendFile
+                text:"file";
+                onClicked: {
+                    var comp=Qt.createComponent("chooseFile.qml");
+                    comp.createObject(chatCom
+                                      ,{
+                                          "frindIpv4":frindIpv4,
+                                          "frindName":friendName.text
+                                      }
+                                      );
+                    initalizeTcp();
+                }
+            }
+        }
+        
     }
 }
