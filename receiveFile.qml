@@ -13,7 +13,8 @@ Item {
     property string fileName: ""
     Rectangle{
         anchors.fill: parent;
-        color: Material.color(Material.BlueGrey)
+//        color: Material.color(Material.BlueGrey)
+        color: "#D3D3D4"
         ProgressBar{
             width: parent.width;
             value: 0.5
@@ -34,10 +35,13 @@ Item {
                 text: "address:"+frindIpv4
             }
             Row{
+                spacing: 4
+                anchors.horizontalCenter: parent.horizontalCenter
                 Button{
                     text: "Receive"
+                    Material.background: Material.Teal
                     onClicked: {
-                        acceptAndConnect(frindIpv4);
+                        folderSelect.visible=true;
                     }
                 }
                 Button{
@@ -53,6 +57,17 @@ Item {
         }
         
         
+        FileDialog{
+            id:folderSelect;
+            folder: shortcuts.home;
+            selectFolder: true;
+            onAccepted: {
+                var path=folderSelect.fileUrl;
+                console.log(path.toString().slice(7))
+                setFullPath(path.toString().slice(7))
+                acceptAndConnect(frindIpv4);
+            }
+        }
     }
     
 }

@@ -10,7 +10,7 @@ Socket::Socket()
     this->udpSocket=NULL;
     //tcp
     bytesWrriten=0;
-    payloadSize=0;
+    payloadSize=4*1024;
 }
 
 FriendsModel *Socket::getFriendsModel() const
@@ -90,6 +90,7 @@ void Socket::sendMsg(int type,QString address,QString friendName,QString content
 void Socket::initalizeTcp()
 {
     tcpPort=34234;
+    bytesToWrite=0;
     this->tcpServer=new QTcpServer(this);
     connect(tcpServer,SIGNAL(newConnection()),this,SLOT(sendFile()));
     connect(tcpServer,SIGNAL(acceptError(QAbstractSocket::SocketError)),
@@ -116,14 +117,20 @@ void Socket::setFileName(const QString &value)
 void Socket::acceptAndConnect(QString friendIPv4)
 {
     bytesReceived=0;
+    fileNameSize=0;
+    totalBytes=0;
     tcpPort=34234;
     this->r_blockSize=0;
     tcpSocketRec=new QTcpSocket(this);
     connect(tcpSocketRec,SIGNAL(readyRead()),this,SLOT(recFile()));
     tcpSocketRec->abort();
     tcpSocketRec->connectToHost(QHostAddress(friendIPv4),tcpPort);
-//    tcpSocketRec->connectToHost(QHostAddress::LocalHost,tcpPort);
-    
+}
+
+void Socket::setFullPath(QString dir)
+{
+    this->r_path=dir;
+    //wait to recived filename
 }
 
 void Socket::handleComingDatagrams()
@@ -229,7 +236,6 @@ void Socket::SendContinueAndUpdateProgressBar(qint64 numBytes)
 
 void Socket::recFile()
 {
-    
     //reference
     QDataStream in(tcpSocketRec);
     in.setVersion(QDataStream::Qt_4_7);
@@ -245,9 +251,9 @@ void Socket::recFile()
         if((tcpSocketRec->bytesAvailable() >= fileNameSize)
                 && (fileNameSize != 0))
         {  //接收文件名，并建立文件
-            in >> fileName;
+            in >> r_fileName;
             bytesReceived += fileNameSize;
-            localFile = new QFile(fileName);
+            localFile = new QFile(r_path+'/'+ r_fileName);
             if(!localFile->open(QFile::WriteOnly))
             {
                 qDebug() << "open file error!";
@@ -256,8 +262,6 @@ void Socket::recFile()
         }
         else return;
     }
-
-
     if(bytesReceived < totalBytes)
     {  //如果接收的数据小于总数据，那么写入文件
         bytesReceived += tcpSocketRec ->bytesAvailable();
@@ -271,6 +275,7 @@ void Socket::recFile()
     { //接收数据完成时
         tcpSocketRec->close();
         localFile->close();
+        qDebug()<<"recived file success";
     }
 }
 

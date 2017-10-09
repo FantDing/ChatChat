@@ -13,7 +13,7 @@ Item {
     
     Rectangle{
         anchors.fill: parent;
-        color: Material.color(Material.BlueGrey)
+        color: "#D3D3D4"
         ProgressBar{
             width: parent.width;
             value: 0.5

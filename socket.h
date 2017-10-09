@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE void initalizeTcp();
     Q_INVOKABLE void setFileName(const QString &value);
     Q_INVOKABLE void acceptAndConnect(QString friendIPv4);
+    Q_INVOKABLE void setFullPath(QString dir);
     
 private:
     // gui
@@ -81,10 +82,15 @@ private:
     
     
     //tcp receiver
-    quint64 r_blockSize;
+    qint64 r_blockSize;
+    qint64 fileNameSize;
+    qint64 totalBytes;
     QTcpSocket* tcpSocketRec;
-    quint64  bytesReceived;
-    
+    qint64  bytesReceived;
+    QString r_fileName;
+    QString r_path;
+    QFile* localFile;
+    QByteArray inBlock;
 signals:
     //gui
     void friendsModelChanged(FriendsModel* newValue);
