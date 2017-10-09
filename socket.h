@@ -51,6 +51,7 @@ public:
     //tcp
     Q_INVOKABLE void initalizeTcp();
     Q_INVOKABLE void setFileName(const QString &value);
+    Q_INVOKABLE void acceptAndConnect(QString friendIPv4);
     
 private:
     // gui
@@ -78,6 +79,12 @@ private:
     qint64 payloadSize;
     QByteArray outBlock;
     
+    
+    //tcp receiver
+    quint64 r_blockSize;
+    QTcpSocket* tcpSocketRec;
+    quint64  bytesReceived;
+    
 signals:
     //gui
     void friendsModelChanged(FriendsModel* newValue);
@@ -91,7 +98,8 @@ private slots:
     //tcp
     void sendFile();
     void SendContinueAndUpdateProgressBar(qint64 numBytes);
-    
+    void recFile();
+    void printMsg(QAbstractSocket::SocketError socketError);
     
 };
 

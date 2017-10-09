@@ -118,7 +118,7 @@ Item {
                                           "frindName":friendName.text
                                       }
                                       );
-                    initalizeTcp();
+                    
                 }
             }
         }

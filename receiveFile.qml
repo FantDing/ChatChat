@@ -36,6 +36,9 @@ Item {
             Row{
                 Button{
                     text: "Receive"
+                    onClicked: {
+                        acceptAndConnect(frindIpv4);
+                    }
                 }
                 Button{
                     text: "Refuse"

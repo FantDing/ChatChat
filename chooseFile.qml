@@ -65,7 +65,8 @@ Item {
             title: "choose a file to send";
             folder: shortcuts.home
             onAccepted: {
-                fileFullName.text=fileDialog.fileUrl;
+                var path=fileDialog.fileUrl;
+                fileFullName.text=path.toString().slice(7);
                 setFileName(fileFullName.text);
             }
         }
@@ -76,6 +77,7 @@ Item {
 
     Component.onCompleted: {
         onFileStatus.connect(onSignal);
+        initalizeTcp();
     }
     
 }
