@@ -6,7 +6,6 @@ Item {
     id:homeCom
     anchors.fill: parent
     property alias username: username.text
-    property bool isStartTime: true
     
     function onSignal(friendName,friendIpv4,fileName){
         console.log(fileName+" "+friendName+" "+friendIpv4)
@@ -57,11 +56,13 @@ Item {
                     id:friendsDelegate
                     Rectangle{
                         id:rec
+                        //to use "friendsView.currentItem.name", must expose the property 
                         property alias name: txt_nickName.text
                         property alias address: txt_ipv4.text
                         height: 50
                         width: parent.width
                         Rectangle{
+                            //border: to border a friend
                             id:borderLine
                             anchors{
                                 fill: parent
@@ -73,28 +74,38 @@ Item {
                                 color: Qt.rgba(0.2,0.2,0.2,0.2)
                             }
                         }
-                        Column{
+                        // show name\ipv4\newMsgCount
+                        Row{
                             anchors.left: parent.left
                             anchors.leftMargin: 10
-                            Text {
-                                id:txt_nickName
-                                text:nickName
-                                font.pointSize: 16
+                            Column{
+                                width: 200
+                                Text {
+                                    id:txt_nickName
+                                    text:nickName
+                                    font.pointSize: 16
+                                }
+                                Text {
+                                    id:txt_ipv4
+                                    text: ipv4
+                                    font.pointSize: 12
+                                    color: "gray"
+                                }
                             }
+                            
                             Text {
-                                id:txt_ipv4
-                                text: ipv4
-                                font.pointSize: 12
-                                color: "gray"
+                                id: txt_newMsgCount
+                                text: newMsgCount
                             }
                         }
+
+                        
                         MouseArea{
                             anchors.fill: parent;
                             onClicked: {
                                 //The index is exposed as an accessible index property
                                 friendsView.currentIndex=index
                                 setCurrentFriend(friendsView.currentItem.name+friendsView.currentItem.address);
-                                console.log(friendsView.currentItem.name+":"+friendsView.currentItem.address);
                                 var charCom=Qt.createComponent("chat.qml")
                                 var currentPage=charCom.createObject(homeCom
                                                                      ,{

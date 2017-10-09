@@ -48,6 +48,9 @@ QVariant FriendsModel::data(const QModelIndex &index, int role) const
     else if(role==Role::role2){
         return item.getNickName();
     }
+    else if(role==Role::role3){
+        return item.getNewMsgCount();
+    }
 
     return QVariant();
 }
@@ -57,6 +60,7 @@ QHash<int, QByteArray> FriendsModel::roleNames() const
     QHash<int,QByteArray> hash;
     hash[Role::role1]="ipv4";
     hash[Role::role2]="nickName";
+    hash[Role::role3]="newMsgCount";
     return hash;
 }
 
@@ -73,4 +77,14 @@ QString FriendItem::getIpv4() const
 QString FriendItem::getNickName() const
 {
     return nickName;
+}
+
+int FriendItem::getNewMsgCount() const
+{
+    return newMsgCount;
+}
+
+void FriendItem::setNewMsgCount(const int &value)
+{
+    newMsgCount = value;
 }

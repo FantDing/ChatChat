@@ -23,7 +23,7 @@ public:
     enum Role{
         role1=1,
         role2,
-//        role3
+        role3
     };
 
     QVector<FriendItem> getItems() const;
@@ -39,7 +39,7 @@ public:
     FriendItem(QString ip="",QString name=""){
         this->ipv4=ip;
         this->nickName=name;
-//        this->chatRecordsModel=NULL;
+        this->newMsgCount=0;
     }
     
     bool operator ==(const FriendItem& item1){
@@ -51,17 +51,18 @@ public:
             return false;
         }
     }
+    
+    
     QString getIpv4() const;
     QString getNickName() const;
-//    ChatRecordsModel *getChatRecordsModel() const;
-//    void setChatRecordsModel(ChatRecordsModel *value);
+    int getNewMsgCount() const;
+    void setNewMsgCount(const int &value);
     
 private:
     //note: when add a property ,you must change data() & roleNames() functions
     QString ipv4;
     QString nickName;
-    //every single friend has a chatRecordsModel
-//    ChatRecordsModel* chatRecordsModel;
+    int newMsgCount;
 };
 
 #endif // FRIENDSMODEL_H

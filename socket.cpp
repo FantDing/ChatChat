@@ -150,6 +150,8 @@ void Socket::handleComingDatagrams()
         QString friendIpv4;
         QString chatContent="";
         QString targetName="";
+        FriendItem item;
+        int index=0;
         in>>msgType>>friendName>>friendIpv4;
         if(friendName==nickName&&friendIpv4==ipv4){
             return;
@@ -164,9 +166,7 @@ void Socket::handleComingDatagrams()
             }
             break;
         case EXIT:
-            qDebug()<<"to exit";
             if(friends.contains(friendName+friendIpv4)){
-                qDebug()<<"exited";
                 int index=friendsModel->getItems().indexOf(FriendItem(friendIpv4,friendName));
                 qDebug()<<index;
                 friendsModel->remove(index);
@@ -187,9 +187,11 @@ void Socket::handleComingDatagrams()
                 map[friendName+friendIpv4]=new ChatRecordsModel();
                 map[friendName+friendIpv4]->pushBack(chatContent,false);
             }
+            index=friendsModel->getItems().indexOf(FriendItem(friendIpv4,friendName));
+            item= friendsModel->getItems().value(index);
+            item.setNewMsgCount(item.getNewMsgCount()+1);
             break;
         case FILECOME:// FriendName FileName
-//            qDebug()<<"FILECOME";
             in>>targetName;
             if(targetName!=nickName){
                 qDebug()<<targetName<<":NOT ME";
