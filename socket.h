@@ -9,7 +9,7 @@
 #include<QTcpServer>
 #include<QTcpSocket>
 #include<QFile>
-
+#include"robot.h"
 class ChatRecordsModel;
 class FriendsModel;
 class Socket:public QObject
@@ -36,6 +36,7 @@ public:
         SAY,//2: chat message
         FILECOME,//3: send file
         FILEREFUSE,//4: refuse to receive message
+        ROBOT,//5
     };
     Q_ENUM(MsgType)
     
@@ -51,6 +52,8 @@ public:
     Q_INVOKABLE void setFileName(const QString &value);
     Q_INVOKABLE void acceptAndConnect(QString friendIPv4);
     Q_INVOKABLE void setFullPath(QString dir);
+    //robop
+    void sendToRobot(QString content);
     
 private:
     // gui
@@ -87,6 +90,9 @@ private:
     QString r_path;
     QFile* localFile;
     QByteArray inBlock;
+    
+    //robot
+    Robot* robot;
 signals:
     //gui
     void friendsModelChanged(FriendsModel* newValue);
@@ -96,6 +102,7 @@ signals:
     void fileStatus(QString status);
     void updateProgressBar(double value);
     void updateRecBar(double value);
+    void updateChatView();
 private slots:
     //socket
     void handleComingDatagrams();
@@ -104,6 +111,8 @@ private slots:
     void SendContinueAndUpdateProgressBar(qint64 numBytes);
     void recFile();
     void printMsg(QAbstractSocket::SocketError socketError);
+    //robot
+    void replyFinished(QNetworkReply *reply);
     
 };
 

@@ -6,7 +6,8 @@ CONFIG += c++11
 SOURCES += main.cpp \
     socket.cpp \
     friendsmodel.cpp \
-    chatrecordsmodel.cpp
+    chatrecordsmodel.cpp \
+    robot.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,4 +38,5 @@ DISTFILES +=
 HEADERS += \
     socket.h \
     friendsmodel.h \
-    chatrecordsmodel.h
+    chatrecordsmodel.h \
+    robot.h

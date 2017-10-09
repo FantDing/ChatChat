@@ -2,7 +2,7 @@
 #include<QDebug>
 FriendsModel::FriendsModel(QObject* parent):QAbstractListModel(parent)
 {
-
+    pushBack("","robot");
 }
 
 void FriendsModel::pushBack(QString ipv4, QString nickName)

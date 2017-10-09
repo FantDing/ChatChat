@@ -8,6 +8,24 @@ Item {
     property alias theModel: charView.model
     property alias friendName: friendName.text
     property string frindIpv4: ""
+    
+    
+    Component.onCompleted: {
+        onUpdateChatView.connect(toEnd);
+        function toEnd(){
+            charView.positionViewAtEnd();   
+        }
+    }
+    
+    //    @ it's too fast to update the view
+    //    Connections{
+    //        target: theModel;
+    //        onRowsInserted:{
+    //            console.log("add...")
+    //            charView.positionViewAtEnd();
+    //        }
+    //    }
+    
     Rectangle{
         //@ because next Column'items has space,you will
         // see parent in the space. So, this Rectangle can
@@ -57,23 +75,28 @@ Item {
             height: 400
             clip: true;
             width: parent.width
-            //        model: 
             delegate: chatDelegate
             
             Component.onCompleted: {
                 positionViewAtEnd();
             }
-            
-            
             Component{
                 id:chatDelegate
                 Rectangle{
-                    height: 40
-                    width: parent.width-10
-                    Text {
-                        anchors.right: direction?parent.right:undefined
+                    width: parent.width
+                    height: childrenRect.height
+                    Label {
+                        id:textContent
                         text: content
-                        font.pointSize: 16
+                        width: parent.width-40
+                        font.pointSize: 13
+                        wrapMode: Text.WrapAnywhere
+                        Component.onCompleted: {
+                            if(direction==true){
+                                textContent.horizontalAlignment=Text.AlignRight;
+                                textContent.anchors.right=parent.right
+                            }
+                        }
                     }
                 }
             }//chatDelegate-end
@@ -97,7 +120,12 @@ Item {
                         return;
                     }
                     chatModel.pushBack(send_content.text,true);//add to model
-                    sendMsg(2,"broadcast",friendName.text,send_content.text);//send
+                    var type=2;
+                    if(frindIpv4+friendName.text===friendName.text){
+                        //robot
+                        type=5;
+                    }
+                    sendMsg(type,"broadcast",friendName.text,send_content.text);//send
                     send_content.text="";
                     send_content.focus=true;
                     charView.positionViewAtEnd();
@@ -112,13 +140,13 @@ Item {
                 id:sendFile
                 text:"F";
                 background: Rectangle {
-                          implicitWidth: 40
-                          implicitHeight: 40
-                          opacity: enabled ? 1 : 0.3
-                          border.color: sendFile.down ? "#17a81a" : "#21be2b"
-                          border.width: 1
-                          radius: 22
-                      }
+                    implicitWidth: 40
+                    implicitHeight: 40
+                    opacity: enabled ? 1 : 0.3
+                    border.color: sendFile.down ? "#17a81a" : "#21be2b"
+                    border.width: 1
+                    radius: 22
+                }
                 onClicked: {
                     var comp=Qt.createComponent("chooseFile.qml");
                     comp.createObject(chatCom
@@ -127,7 +155,6 @@ Item {
                                           "frindName":friendName.text
                                       }
                                       );
-                    
                 }
             }
         }

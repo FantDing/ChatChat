@@ -3,6 +3,10 @@
 #include<QNetworkInterface>
 #include<QByteArray>
 #include<QDataStream>
+#include<QNetworkReply>
+#include<QJsonParseError>
+#include<QJsonDocument>
+
 
 Socket::Socket()
 {
@@ -11,6 +15,11 @@ Socket::Socket()
     //tcp
     bytesWrriten=0;
     payloadSize=4*1024;
+    //robot
+    robot=new Robot();
+    connect(robot->getManager(), SIGNAL(finished(QNetworkReply *)), 
+            this, SLOT(replyFinished(QNetworkReply *)));
+    
 }
 
 FriendsModel *Socket::getFriendsModel() const
@@ -84,6 +93,10 @@ void Socket::sendMsg(int type,QString address,QString friendName,QString content
     case FILEREFUSE:
         udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
         break;
+    case ROBOT:
+        qDebug()<<"send to robot";
+        sendToRobot(content);
+        break;
     default:
         qDebug()<<"wrong proctol";
         break;
@@ -138,6 +151,12 @@ void Socket::setFullPath(QString dir)
     //wait to recived filename
 }
 
+void Socket::sendToRobot(QString content)
+{
+    this->robot->post(content);
+//    map["robot"]->pushBack(robot->getResponse(),false);
+}
+
 void Socket::handleComingDatagrams()
 {
     while(udpSocket->hasPendingDatagrams()){
@@ -187,6 +206,8 @@ void Socket::handleComingDatagrams()
                 map[friendName+friendIpv4]=new ChatRecordsModel();
                 map[friendName+friendIpv4]->pushBack(chatContent,false);
             }
+            emit updateChatView();
+            //to notify newMsgCount
             index=friendsModel->getItems().indexOf(FriendItem(friendIpv4,friendName));
             item= friendsModel->getItems().value(index);
             item.setNewMsgCount(item.getNewMsgCount()+1);
@@ -298,6 +319,31 @@ void Socket::printMsg(QAbstractSocket::SocketError socketError)
 {
     
     qDebug()<<socketError;
+}
+
+void Socket::replyFinished(QNetworkReply *reply)
+{
+    QByteArray bytes = reply->readAll();
+    QJsonParseError jsonError;
+    QJsonDocument doucment = QJsonDocument::fromJson(bytes, &jsonError);
+    if (jsonError.error != QJsonParseError::NoError) {
+        qDebug() << QStringLiteral("fail to read json");
+        return;
+    }
+    // 解析Json
+    QString response;
+    if (doucment.isObject()) {
+        QJsonObject obj = doucment.object();
+        QJsonValue value;
+        if (obj.contains("text")) {
+            value = obj.take("text");
+            if (value.isString()) {
+                response= value.toString();
+            }
+        }
+    }
+    map["robot"]->pushBack(response,false);
+    emit updateChatView();
 }
 
 

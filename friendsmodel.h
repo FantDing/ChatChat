@@ -5,7 +5,6 @@
 #include<QVector>
 #include<QMap>
 
-
 class FriendItem;
 class FriendsModel:public QAbstractListModel
 {

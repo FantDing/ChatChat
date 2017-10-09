@@ -2,7 +2,6 @@
 
 ChatRecordsModel::ChatRecordsModel(QObject *parent) : QAbstractListModel(parent)
 {
-    pushBack("welcome & say hello",false);
 }
 
 void ChatRecordsModel::pushBack(QString content,bool direction)
