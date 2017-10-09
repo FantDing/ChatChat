@@ -16,9 +16,17 @@ Item {
 //        color: Material.color(Material.BlueGrey)
         color: "#D3D3D4"
         ProgressBar{
+            id:bar
             width: parent.width;
-            value: 0.5
+            value: 0
         }
+        Component.onCompleted: {
+            onUpdateRecBar.connect(onUpdate);
+            function onUpdate(value){
+                bar.value=value;
+            }
+        }
+
         Column{
             anchors.centerIn: parent
             Text {

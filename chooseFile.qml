@@ -15,29 +15,44 @@ Item {
         anchors.fill: parent;
         color: "#D3D3D4"
         ProgressBar{
+            id:bar
             width: parent.width;
-            value: 0.5
+            value: 0
         }
+        
+        Component.onCompleted: {
+            onUpdateProgressBar.connect(onUpdate);
+            function onUpdate(value){
+                bar.value=value;
+            }
+        }
+
+        
         Column{
             anchors.centerIn: parent
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 id: txt_status
+                text:"CHOOSE"
                 font.pointSize: 16
+                height: 40
             }
             Row{
                 //filename & choose btn
                 Label{
                     id:fileFullName;
                     text: "choose your file..."
-                    topPadding: 10
+                    width: 150
+                    height: 40
+                    verticalAlignment:Text.AlignVCenter
+                    horizontalAlignment:Text.Text.AlignHCenter
                     clip: true;
                     elide: Text.ElideMiddle
-                    width: 150
                 }
                 
                 Button{
                     text: "choose";
+                    
                     onClicked: {
                         fileDialog.open();
                     }
@@ -45,17 +60,22 @@ Item {
                 
             }
             Row{
+                spacing: 4
+                anchors.horizontalCenter: parent.horizontalCenter
                 // send & close btn
                 Button{
                     text:"send";
                     onClicked: {
+                        txt_status.text="WAITING...";
                         sendMsg(3,"broadcast",frindName,fileFullName.text)
 //                    online:    sendMsg(3,frindIpv4,frindName,fileFullName.text)
                     }
+                    Material.background: Material.LightBlue
                 }
                 Button{
                     text:"close";
                     onClicked: chooseFile.destroy();
+                    Material.background: Material.Red
                 }
             }
         }

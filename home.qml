@@ -74,6 +74,8 @@ Item {
                             }
                         }
                         Column{
+                            anchors.left: parent.left
+                            anchors.leftMargin: 10
                             Text {
                                 id:txt_nickName
                                 text:nickName

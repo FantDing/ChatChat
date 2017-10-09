@@ -9,7 +9,10 @@ Window {
     title: qsTr("ChatChat")
 
     property var currentPage: null
-
+    onClosing:{
+        sendMsg(1,"broadcast");
+    }
+    
     Component.onCompleted: {
         //@ set start position
         setX(Screen.width / 2 - width / 2);
@@ -18,8 +21,6 @@ Window {
         var login=Qt.createComponent("login.qml");
         currentPage=login.createObject(root);
         currentPage.login.connect(onLogin);
-
-
     }
 
     function onLogin(name){

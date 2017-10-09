@@ -20,6 +20,13 @@ void FriendsModel::clear()
     endRemoveRows();
 }
 
+void FriendsModel::remove(int index)
+{
+    beginRemoveRows(QModelIndex(), index, index);
+    items.remove(index);
+    endRemoveRows();
+}
+
 
 
 int FriendsModel::rowCount(const QModelIndex &parent) const
@@ -51,6 +58,11 @@ QHash<int, QByteArray> FriendsModel::roleNames() const
     hash[Role::role1]="ipv4";
     hash[Role::role2]="nickName";
     return hash;
+}
+
+QVector<FriendItem> FriendsModel::getItems() const
+{
+    return items;
 }
 
 QString FriendItem::getIpv4() const

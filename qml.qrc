@@ -7,5 +7,6 @@
         <file>chat.qml</file>
         <file>chooseFile.qml</file>
         <file>receiveFile.qml</file>
+        <file>img/addFile.png</file>
     </qresource>
 </RCC>

@@ -12,20 +12,21 @@ Item {
     signal login(var name);
     Column{
         anchors.centerIn: parent
+        
         Row{
             spacing: 8
             Label{
                 text: "USERNAME"
                 topPadding: 10
             }
-
+            
             TextField{
                 focus: true;
                 id:username;
                 width: 200;
             }
         }
-
+        
         Button{
             id:btnLogin
             anchors.right: parent.right

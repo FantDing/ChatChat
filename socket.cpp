@@ -68,6 +68,9 @@ void Socket::sendMsg(int type,QString address,QString friendName,QString content
     case HELLO:// HELLO MyName MyIP
         udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
         break;
+    case EXIT:
+        udpSocket->writeDatagram(data,data.length(),targetAddress,udpPort);
+        break;
     case SAY:
         // SAY MyName MyIp FriendName content
         out<<friendName<<content;
@@ -95,7 +98,8 @@ void Socket::initalizeTcp()
     connect(tcpServer,SIGNAL(newConnection()),this,SLOT(sendFile()));
     connect(tcpServer,SIGNAL(acceptError(QAbstractSocket::SocketError)),
             this,SLOT(printMsg(QAbstractSocket::SocketError)));
-    if(!tcpServer->listen(QHostAddress::Any,tcpPort)){
+//    if(!tcpServer->listen(QHostAddress::Any,tcpPort)){
+    if(!tcpServer->listen(QHostAddress::LocalHost,tcpPort)){
         qDebug()<<"TCP LISTEN ERROR";
         return;
     }
@@ -124,7 +128,8 @@ void Socket::acceptAndConnect(QString friendIPv4)
     tcpSocketRec=new QTcpSocket(this);
     connect(tcpSocketRec,SIGNAL(readyRead()),this,SLOT(recFile()));
     tcpSocketRec->abort();
-    tcpSocketRec->connectToHost(QHostAddress(friendIPv4),tcpPort);
+//    tcpSocketRec->connectToHost(QHostAddress(friendIPv4),tcpPort);
+    tcpSocketRec->connectToHost(QHostAddress::LocalHost,tcpPort);
 }
 
 void Socket::setFullPath(QString dir)
@@ -154,7 +159,17 @@ void Socket::handleComingDatagrams()
             //must add this condition to avoid endless sendHello
             if(!friends.contains(friendName+friendIpv4)){
                 friendsModel->pushBack(friendIpv4,friendName);
+                friends.push_back(friendName+friendIpv4);
                 sendMsg(HELLO,friendIpv4,"all");
+            }
+            break;
+        case EXIT:
+            qDebug()<<"to exit";
+            if(friends.contains(friendName+friendIpv4)){
+                qDebug()<<"exited";
+                int index=friendsModel->getItems().indexOf(FriendItem(friendIpv4,friendName));
+                qDebug()<<index;
+                friendsModel->remove(index);
             }
             break;
         case SAY:
@@ -215,7 +230,6 @@ void Socket::sendFile()
 
 void Socket::SendContinueAndUpdateProgressBar(qint64 numBytes)
 {
-    qDebug()<<"...";
     bytesWrriten+=(int)numBytes;
     if(bytesToWrite>0){
         outBlock=locFile->read(qMin(bytesToWrite,payloadSize));
@@ -229,9 +243,9 @@ void Socket::SendContinueAndUpdateProgressBar(qint64 numBytes)
     if(bytesWrriten==totalBytesToSend){
         locFile->close();
         tcpServer->close();
-        qDebug()<<"send file end";
         emit fileStatus("Success");
     }
+    emit updateProgressBar(bytesWrriten/totalBytesToSend);
 }
 
 void Socket::recFile()
@@ -269,14 +283,13 @@ void Socket::recFile()
         localFile->write(inBlock);
         inBlock.resize(0);
     }
-
-    //更新进度条
     if(bytesReceived == totalBytes)
     { //接收数据完成时
         tcpSocketRec->close();
         localFile->close();
         qDebug()<<"recived file success";
     }
+    emit updateRecBar(bytesReceived/totalBytes);
 }
 
 void Socket::printMsg(QAbstractSocket::SocketError socketError)

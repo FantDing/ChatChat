@@ -107,9 +107,18 @@ Item {
         
         Row{
             //function area
+            anchors.horizontalCenter: parent.horizontalCenter
             Button{
                 id:sendFile
-                text:"file";
+                text:"F";
+                background: Rectangle {
+                          implicitWidth: 40
+                          implicitHeight: 40
+                          opacity: enabled ? 1 : 0.3
+                          border.color: sendFile.down ? "#17a81a" : "#21be2b"
+                          border.width: 1
+                          radius: 22
+                      }
                 onClicked: {
                     var comp=Qt.createComponent("chooseFile.qml");
                     comp.createObject(chatCom

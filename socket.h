@@ -45,9 +45,7 @@ public:
      * @address target client's ipv4,also you can use "boradcast"
      * @content the msg you will send
     */
-    Q_INVOKABLE void sendMsg(int type,QString address,QString friendName,QString content="");
-    
-    
+    Q_INVOKABLE void sendMsg(int type,QString address,QString friendName="",QString content="");
     //tcp
     Q_INVOKABLE void initalizeTcp();
     Q_INVOKABLE void setFileName(const QString &value);
@@ -79,8 +77,6 @@ private:
     qint64 bytesWrriten;
     qint64 payloadSize;
     QByteArray outBlock;
-    
-    
     //tcp receiver
     qint64 r_blockSize;
     qint64 fileNameSize;
@@ -98,6 +94,8 @@ signals:
     //tcp
     void fileCome(QString friendName,QString friendIpv4,QString filename);
     void fileStatus(QString status);
+    void updateProgressBar(double value);
+    void updateRecBar(double value);
 private slots:
     //socket
     void handleComingDatagrams();

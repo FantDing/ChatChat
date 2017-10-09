@@ -14,6 +14,7 @@ public:
     FriendsModel(QObject* parent=NULL);
     Q_INVOKABLE void pushBack(QString ipv4,QString nickName);
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void remove(int index);
     
     int rowCount(const QModelIndex &parent= QModelIndex() ) const;
     QVariant data(const QModelIndex &index, int role) const;
@@ -25,6 +26,8 @@ public:
 //        role3
     };
 
+    QVector<FriendItem> getItems() const;
+    
 private:
     QVector<FriendItem> items;
     
@@ -38,7 +41,16 @@ public:
         this->nickName=name;
 //        this->chatRecordsModel=NULL;
     }
-
+    
+    bool operator ==(const FriendItem& item1){
+        if(item1.ipv4==ipv4&&
+                item1.nickName==nickName){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     QString getIpv4() const;
     QString getNickName() const;
 //    ChatRecordsModel *getChatRecordsModel() const;
