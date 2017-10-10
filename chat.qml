@@ -48,6 +48,9 @@ Item {
                 anchors.leftMargin: 10
                 text: "back"
                 onClicked: {
+                    //新消息显示为0(函数在c++中定义)
+                    clearNewMsgCount(index);
+                    
                     chatCom.visible=false;
                     chatCom.destroy();
                 }
@@ -83,7 +86,8 @@ Item {
             Component{
                 id:chatDelegate
                 Rectangle{
-                    width: parent.width
+                    width: parent.width-20
+                    anchors.horizontalCenter: parent.horizontalCenter
                     height: childrenRect.height
                     Label {
                         id:textContent
@@ -93,6 +97,7 @@ Item {
                         wrapMode: Text.WrapAnywhere
                         Component.onCompleted: {
                             if(direction==true){
+                                //是我发送的文字
                                 textContent.horizontalAlignment=Text.AlignRight;
                                 textContent.anchors.right=parent.right
                             }
@@ -108,11 +113,21 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             TextArea{
                 id:send_content
+                anchors.bottom: btn_send.bottom
                 focus: true
                 width: 200
+                
+                KeyNavigation.priority: KeyNavigation.BeforeItem;
+                KeyNavigation.tab: btn_send;
+                
             }
             Button{
+                id:btn_send
                 text:"send"
+                Keys.onEnterPressed: {
+                    clicked();
+                }
+
                 onClicked: {
                     console.log("click")
                     if(send_content.text.trim().length==0){

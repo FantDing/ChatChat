@@ -14,7 +14,9 @@ public:
     Q_INVOKABLE void pushBack(QString ipv4,QString nickName);
     Q_INVOKABLE void clear();
     Q_INVOKABLE void remove(int index);
-    
+    //消息提醒
+    void clearNewMsgCount(int index);
+    void addNewMsgCount(int index);
     int rowCount(const QModelIndex &parent= QModelIndex() ) const;
     QVariant data(const QModelIndex &index, int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -30,6 +32,8 @@ public:
 private:
     QVector<FriendItem> items;
     
+    
+    // QAbstractItemModel interface
 };
 
 

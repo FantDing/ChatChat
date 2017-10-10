@@ -6,6 +6,7 @@ Item {
     id:homeCom
     anchors.fill: parent
     property alias username: username.text
+    property var currentPage: null
     
     function onSignal(friendName,friendIpv4,fileName){
         console.log(fileName+" "+friendName+" "+friendIpv4)
@@ -42,6 +43,17 @@ Item {
             height: homeCom.height-header.height
             contentWidth: homeCom.width
             ListView{
+                Component.onCompleted: {
+                    onFriendExit.connect(onFriendE);
+                    function onFriendE(index){
+                        if(index===friendsView.currentIndex){
+                            //必须先unvisibel,最后才能destroy.否则界面会卡住
+                            currentPage.visible=false;
+                            currentPage.destroy();
+                        }
+                    }
+                }
+
                 id:friendsView
                 anchors.fill: parent
                 
@@ -74,40 +86,55 @@ Item {
                                 color: Qt.rgba(0.2,0.2,0.2,0.2)
                             }
                         }
+                        
                         // show name\ipv4\newMsgCount
-                        Row{
+                        Column{
+                            width: 200
                             anchors.left: parent.left
-                            anchors.leftMargin: 10
-                            Column{
-                                width: 200
-                                Text {
-                                    id:txt_nickName
-                                    text:nickName
-                                    font.pointSize: 16
-                                }
-                                Text {
-                                    id:txt_ipv4
-                                    text: ipv4
-                                    font.pointSize: 12
-                                    color: "gray"
-                                }
+                            anchors.leftMargin: 8
+                            Text {
+                                id:txt_nickName
+                                text:nickName
+                                font.pointSize: 15
                             }
-                            
+                            Text {
+                                id:txt_ipv4
+                                text: ipv4
+                                font.pointSize: 10
+                                color: "gray"
+                            }
+                        }
+                        
+                        Rectangle{
+                            id:msgCount
+                            visible: txt_newMsgCount.text==="0"?false:true;
+                            width: 18
+                            height: 18
+                            radius: 9
+                            color: "red"
+                            anchors.right: parent.right
+                            anchors.rightMargin: 8
+                            anchors.verticalCenter: parent.verticalCenter
                             Text {
                                 id: txt_newMsgCount
+                                color: "white"
+                                anchors.centerIn: parent
                                 text: newMsgCount
+                                font.bold: true;
                             }
                         }
 
                         
+                        
                         MouseArea{
                             anchors.fill: parent;
+                            
                             onClicked: {
                                 //The index is exposed as an accessible index property
                                 friendsView.currentIndex=index
                                 setCurrentFriend(friendsView.currentItem.name+friendsView.currentItem.address);
                                 var charCom=Qt.createComponent("chat.qml")
-                                var currentPage=charCom.createObject(homeCom
+                                currentPage=charCom.createObject(homeCom
                                                                      ,{
                                                                          "theModel":chatModel,
                                                                          "friendName":friendsView.currentItem.name,

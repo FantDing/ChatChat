@@ -11,6 +11,15 @@ Item {
     property string frindIpv4: ""
     property string frindName: ""
     property string fileName: ""
+    
+    Component.onCompleted: {
+        onRecSuccess.connect(onRecSignal)
+        function onRecSignal(){
+            btn_rec.enabled=false;
+            btn_ref.text="CLOSE";
+        }
+    }
+
     Rectangle{
         anchors.fill: parent;
 //        color: Material.color(Material.BlueGrey)
@@ -46,6 +55,7 @@ Item {
                 spacing: 4
                 anchors.horizontalCenter: parent.horizontalCenter
                 Button{
+                    id:btn_rec;
                     text: "Receive"
                     Material.background: Material.Teal
                     onClicked: {
@@ -53,11 +63,15 @@ Item {
                     }
                 }
                 Button{
+                    id:btn_ref;
                     text: "Refuse"
                     Material.background: Material.Red
                     onClicked: {
                         receiveFile.destroy();
-                        sendMsg(4,"broadcast",frindName);
+                        if(text==="Refuse"){
+                            sendMsg(4,"broadcast",frindName);
+                        }
+
                     }
                 }
             }

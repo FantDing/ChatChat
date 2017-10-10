@@ -9,8 +9,13 @@ Window {
     title: qsTr("ChatChat")
 
     property var currentPage: null
+    property bool hasLogin: false
     onClosing:{
-        sendMsg(1,"broadcast");
+        if(hasLogin)
+        {
+            sendMsg(1,"broadcast");
+        }
+
     }
     
     Component.onCompleted: {
@@ -24,6 +29,7 @@ Window {
     }
 
     function onLogin(name){
+        hasLogin=true;
         currentPage.destroy()
         //@ show home page
         var home=Qt.createComponent("home.qml");

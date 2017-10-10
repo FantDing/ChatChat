@@ -15,8 +15,6 @@ class FriendsModel;
 class Socket:public QObject
 {
     Q_OBJECT
-//    Q_ENUMS(MsgType)
-    
     Q_PROPERTY(FriendsModel *friendModel READ getFriendsModel NOTIFY friendsModelChanged)
     Q_PROPERTY(ChatRecordsModel* chatModel READ getChatModel NOTIFY chatModelChanged)
 
@@ -52,7 +50,9 @@ public:
     Q_INVOKABLE void setFileName(const QString &value);
     Q_INVOKABLE void acceptAndConnect(QString friendIPv4);
     Q_INVOKABLE void setFullPath(QString dir);
-    //robop
+    //msg show
+    Q_INVOKABLE void clearNewMsgCount(int row);
+    //robot
     void sendToRobot(QString content);
     
 private:
@@ -103,6 +103,8 @@ signals:
     void updateProgressBar(double value);
     void updateRecBar(double value);
     void updateChatView();
+    void recSuccess();
+    void friendExit(int index);
 private slots:
     //socket
     void handleComingDatagrams();

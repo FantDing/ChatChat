@@ -111,8 +111,8 @@ void Socket::initalizeTcp()
     connect(tcpServer,SIGNAL(newConnection()),this,SLOT(sendFile()));
     connect(tcpServer,SIGNAL(acceptError(QAbstractSocket::SocketError)),
             this,SLOT(printMsg(QAbstractSocket::SocketError)));
-//    if(!tcpServer->listen(QHostAddress::Any,tcpPort)){
-    if(!tcpServer->listen(QHostAddress::LocalHost,tcpPort)){
+    if(!tcpServer->listen(QHostAddress::Any,tcpPort)){
+//    if(!tcpServer->listen(QHostAddress::LocalHost,tcpPort)){
         qDebug()<<"TCP LISTEN ERROR";
         return;
     }
@@ -141,8 +141,8 @@ void Socket::acceptAndConnect(QString friendIPv4)
     tcpSocketRec=new QTcpSocket(this);
     connect(tcpSocketRec,SIGNAL(readyRead()),this,SLOT(recFile()));
     tcpSocketRec->abort();
-//    tcpSocketRec->connectToHost(QHostAddress(friendIPv4),tcpPort);
-    tcpSocketRec->connectToHost(QHostAddress::LocalHost,tcpPort);
+    tcpSocketRec->connectToHost(QHostAddress(friendIPv4),tcpPort);
+//    tcpSocketRec->connectToHost(QHostAddress::LocalHost,tcpPort);
 }
 
 void Socket::setFullPath(QString dir)
@@ -151,10 +151,14 @@ void Socket::setFullPath(QString dir)
     //wait to recived filename
 }
 
+void Socket::clearNewMsgCount(int row)
+{
+    this->friendsModel->clearNewMsgCount(row);
+}
+
 void Socket::sendToRobot(QString content)
 {
     this->robot->post(content);
-//    map["robot"]->pushBack(robot->getResponse(),false);
 }
 
 void Socket::handleComingDatagrams()
@@ -187,7 +191,7 @@ void Socket::handleComingDatagrams()
         case EXIT:
             if(friends.contains(friendName+friendIpv4)){
                 int index=friendsModel->getItems().indexOf(FriendItem(friendIpv4,friendName));
-                qDebug()<<index;
+                emit friendExit(index);
                 friendsModel->remove(index);
             }
             break;
@@ -209,8 +213,7 @@ void Socket::handleComingDatagrams()
             emit updateChatView();
             //to notify newMsgCount
             index=friendsModel->getItems().indexOf(FriendItem(friendIpv4,friendName));
-            item= friendsModel->getItems().value(index);
-            item.setNewMsgCount(item.getNewMsgCount()+1);
+            friendsModel->addNewMsgCount(index);
             break;
         case FILECOME:// FriendName FileName
             in>>targetName;
@@ -219,7 +222,6 @@ void Socket::handleComingDatagrams()
                 return;
             }
             in>>chatContent;
-            qDebug()<<"fileCome in c++";
             emit fileCome(friendName,friendIpv4,chatContent);
             break;
         case FILEREFUSE:
@@ -310,7 +312,7 @@ void Socket::recFile()
     { //接收数据完成时
         tcpSocketRec->close();
         localFile->close();
-        qDebug()<<"recived file success";
+        emit recSuccess();
     }
     emit updateRecBar(bytesReceived/totalBytes);
 }

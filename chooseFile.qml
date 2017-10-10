@@ -64,6 +64,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 // send & close btn
                 Button{
+                    id:btn_send;
                     text:"send";
                     onClicked: {
                         txt_status.text="WAITING...";
@@ -85,18 +86,26 @@ Item {
             title: "choose a file to send";
             folder: shortcuts.home
             onAccepted: {
+                bar.value=0;
+                btn_send.enabled=true;
+                
                 var path=fileDialog.fileUrl;
                 fileFullName.text=path.toString().slice(7);
                 setFileName(fileFullName.text);
             }
         }
     }
+    
     function onSignal(status){
         txt_status.text=status;
+        if(status==="Success"){
+            btn_send.enabled=false ;
+        }
     }
-
+    
     Component.onCompleted: {
         onFileStatus.connect(onSignal);
+        //当弹出对话框时，初始化TCP
         initalizeTcp();
     }
     

@@ -27,7 +27,20 @@ void FriendsModel::remove(int index)
     endRemoveRows();
 }
 
+void FriendsModel::clearNewMsgCount(int index)
+{
+    items[index].setNewMsgCount(0);
+    //通知view 从(index,0)到(index,0)发生了改变,需要刷新
+    emit dataChanged(QAbstractItemModel::createIndex(index,0),QAbstractItemModel::createIndex(index,0));
+}
 
+void FriendsModel::addNewMsgCount(int index)
+{
+    int count=items[index].getNewMsgCount();
+    items[index].setNewMsgCount(count+1);
+    //通知view 从(index,0)到(index,0)发生了改变,需要刷新
+    emit dataChanged(QAbstractItemModel::createIndex(index,0),QAbstractItemModel::createIndex(index,0));
+}
 
 int FriendsModel::rowCount(const QModelIndex &parent) const
 {
@@ -87,4 +100,19 @@ int FriendItem::getNewMsgCount() const
 void FriendItem::setNewMsgCount(const int &value)
 {
     newMsgCount = value;
+    
 }
+
+
+//bool FriendsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+//{
+//    qDebug()<<"setData";
+//    int row=index.row();
+//    if(role==Role::role3){
+//        items[row].setNewMsgCount(value.toInt());
+//        emit dataChanged(QModelIndex(),QModelIndex());
+//        qDebug()<<items[row].getNewMsgCount();
+//        return true;
+//    }
+//    return false;
+//}
