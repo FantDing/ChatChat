@@ -15,23 +15,15 @@ public:
         delete request;
         delete manager;
     }
-
     QString getResponse() const;
-    
-    
     QNetworkAccessManager *getManager() const;
-    
 private:
     QNetworkAccessManager *manager;
-    
-    
     QNetworkRequest* request;
     QString baseUrl;
     QUrl url;
     QJsonObject json;
     QString response;
-signals:
-    
 public slots:
     void replyFinished(QNetworkReply *reply);
 };

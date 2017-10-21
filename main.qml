@@ -7,7 +7,6 @@ Window {
     width: 380
     height: 600
     title: qsTr("ChatChat")
-
     property var currentPage: null
     property bool hasLogin: false
     onClosing:{
@@ -15,7 +14,6 @@ Window {
         {
             sendMsg(1,"broadcast");
         }
-
     }
     
     Component.onCompleted: {
@@ -38,6 +36,4 @@ Window {
                                       });
 
     }
-
-
 }

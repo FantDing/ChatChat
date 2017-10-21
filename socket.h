@@ -26,7 +26,6 @@ public:
     Q_INVOKABLE void setCurrentFriend(const QString &value);
     QString getNickName() const;
     Q_INVOKABLE void setNickName(const QString &value);
-    
     //socket
     enum MsgType{
         HELLO,//0: notify other client, I am online now;
@@ -40,8 +39,9 @@ public:
     
     Q_INVOKABLE void initalizeNetwork();//set port,udpSocket......
     /*
-     * @type MsgType,cause you cannot use Enums in qml,so it's a int type
+     * @type type, message head type. Cause you cannot use Enums in qml,so it's a int type
      * @address target client's ipv4,also you can use "boradcast"
+     * @friendName target user's name
      * @content the msg you will send
     */
     Q_INVOKABLE void sendMsg(int type,QString address,QString friendName="",QString content="");
@@ -85,12 +85,11 @@ private:
     qint64 fileNameSize;
     qint64 totalBytes;
     QTcpSocket* tcpSocketRec;
-    qint64  bytesReceived;
+    qint64 bytesReceived;
     QString r_fileName;
     QString r_path;
     QFile* localFile;
     QByteArray inBlock;
-    
     //robot
     Robot* robot;
 signals:
@@ -106,7 +105,7 @@ signals:
     void recSuccess();
     void friendExit(int index);
 private slots:
-    //socket
+    //socket: handle short message
     void handleComingDatagrams();
     //tcp
     void sendFile();

@@ -55,12 +55,10 @@ public:
         }
     }
     
-    
     QString getIpv4() const;
     QString getNickName() const;
     int getNewMsgCount() const;
     void setNewMsgCount(const int &value);
-    
 private:
     //note: when add a property ,you must change data() & roleNames() functions
     QString ipv4;

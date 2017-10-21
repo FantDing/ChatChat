@@ -31,9 +31,8 @@ QNetworkAccessManager *Robot::getManager() const
 
 void Robot::replyFinished(QNetworkReply *reply)
 {
-    // 获取响应信息
+        // 获取响应信息
         QByteArray bytes = reply->readAll();
-        QString str(bytes);
         QJsonParseError jsonError;
         QJsonDocument doucment = QJsonDocument::fromJson(bytes, &jsonError);
         if (jsonError.error != QJsonParseError::NoError) {

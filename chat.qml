@@ -127,9 +127,7 @@ Item {
                 Keys.onEnterPressed: {
                     clicked();
                 }
-
                 onClicked: {
-                    console.log("click")
                     if(send_content.text.trim().length==0){
                         send_content.focus=true;
                         return;
